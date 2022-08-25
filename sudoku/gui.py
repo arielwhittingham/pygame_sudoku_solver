@@ -90,7 +90,6 @@ class SudokuGui:
         :param value: 1-9 sudoku value
         :return: None
         """
-
         pg_color: Any
         if custom_color is False:
             if color_input is None:
@@ -105,7 +104,6 @@ class SudokuGui:
         val = val_font.render(value, True, pg_color)
         screen_position = self.index_to_screen_position(row, col)
         self.screen.blit(val, screen_position)
-        # pygame.display.update()
 
     def fetch_game(self):
         sudoku_site = browser.Browser()
@@ -134,7 +132,7 @@ class SudokuGui:
             if not next_blank:
                 pygame.display.update()
                 print("tries: ", SudokuGui.try_counter)
-                print("1. Backtracking done - Solved!!")
+                print("Backtracking done - Solved!!")
                 time.sleep(100)
                 sys.exit()
 
@@ -150,10 +148,8 @@ class SudokuGui:
                     pygame.display.update()
                 if self.backtrack():
                     pygame.display.update()
-                    print("2. Backtracking done - Solved!!")
-
-                    time.sleep(100)
-
+                    print("Backtracking done - Solved!!")
+                    time.sleep(10)
                     sys.exit()
 
                 self.insert_value(row, col, option, custom_color=color.Color(original_color))
@@ -172,7 +168,7 @@ class SudokuGui:
                     if self.dict_config[ind]['value'] is None:
                         self.set_highlight(ind[0], ind[1], SudokuGui.YELLOW, 1)
                         value = self.game_board.update_value(ind[0], ind[1])
-                        if value == False:
+                        if value is False:
                             counter += 1
                             self.set_highlight(ind[0], ind[1], SudokuGui.BLACK, 1)
                         else:
@@ -189,6 +185,12 @@ class SudokuGui:
         except RuntimeError as re:
             print("Solver Runtime Error", re)
 
+    def setup_puzzle(self):
+        self.color_sections()
+        self.draw_grid()
+        self.fetch_game()
+        self.set_gui_data()
+
     def solve_puzzle(self):
         if self.solve():
             self.backtrack()
@@ -197,7 +199,7 @@ class SudokuGui:
         setup_once = True
         solve_once = True
         running = True
-        pygame.display.set_caption(f"Press Enter To Start! Difficulty: {self.difficulty}")
+        pygame.display.set_caption("Click Anywhere To Start!")
         while running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -209,10 +211,9 @@ class SudokuGui:
                         solve_once = False
                         if setup_once:
                             setup_once = False
-                            self.color_sections()
-                            self.draw_grid()
-                            self.fetch_game()
-                            self.set_gui_data()
+                            self.setup_puzzle()
+                            pygame.display.set_caption(f"Sudoku Solver - Difficulty: {self.difficulty}")
+                            pygame.event.pump()
                         try:
                             self.solve_puzzle()
                             sys.exit()
@@ -230,4 +231,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

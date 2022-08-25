@@ -1,16 +1,10 @@
-import csv
 import urllib.request
 import urllib.parse
-import pprint
-import time
-from typing import Any
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
 from bs4 import BeautifulSoup
-import os
 import chromedriver_autoinstaller
 chromedriver_autoinstaller.install()
-
 
 SudokuConfig = list[list[int]]
 
@@ -101,33 +95,29 @@ class Browser:
     def _get_sudoku_html(self):
         try:
             self.open_url()
-            print(.5)
             html = BeautifulSoup(self.driver.page_source, "html.parser")
             html = html.find("table", {"id": "puzzle_grid"})
             table = html.find('tbody')
-            print(1)
             return table
         except RuntimeError as re:
             print("HTML Not Returned correctly", re.args())
 
     def make_board(self) -> SudokuConfig:
-        print(2)
         board = []
         html = self._get_sudoku_html()
-        print(3)
         for i, row in enumerate(html.find_all("tr")):
             intermediate_list = []
             for j, col in enumerate(row.find_all("td")):
                 try:
                     value = int(col.contents[0].attrs['value'])
                     intermediate_list.append(value)
-                    print(value, end=" | ")
+                    # print(value, end=" | ")
                 except:
                     value = None
                     intermediate_list.append(value)
-                    print(" ", end=" | ")
+                    # print(" ", end=" | ")
             board.append(intermediate_list)
-            print("\n")
+            # print("\n")
         # print(board)
         return board
 

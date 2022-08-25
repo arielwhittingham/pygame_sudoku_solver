@@ -5,22 +5,10 @@ from typing import Union  # , Set, Any, Dict
 import copy
 import time
 import pprint
-
 import numpy as np
 
 DictConfig = dict[tuple[int, int]:dict[str:int, str:int]]
 CellConfig = dict[str:int, str:int]
-# dictionary config Data Type for type-checking
-# board = []
-# with open(os.path.join(os.getcwd(), "..", "Test_game_file.csv"), "r") as op:
-#     for x in op:
-#         inter = []
-#         for i in x.strip().split(","):
-#             if i == '':
-#                 inter.append(None)
-#             else:
-#                 inter.append(int(i))
-#         board.append(inter)
 
 
 def get_section(row: int, col: int) -> int:
@@ -34,6 +22,7 @@ def get_section(row: int, col: int) -> int:
        |4|5|6|
        |1|2|3|
     """
+
     if row <= 3:
         if col <= 3:
             return 1
@@ -60,13 +49,14 @@ def get_section(row: int, col: int) -> int:
 
 class SudokuBoard:
     """
-    This class represents the Board and logic that can be performed on that board,
-    including the algorithm that solves it
+    This class represents the sudoku board data and logical operations that can be performed on the board and
+    its squares, such as updating squares, resetting squares, returning possible values for a square, returning
+    null squares and so on.
     """
     _complete_set = {1, 2, 3, 4, 5, 6, 7, 8, 9}
 
     # Full set of possible Sudoku numbers for any rank, file, or
-    # section (1 of 9 possible 3x3 super-squares of the board).
+    # section (1 of 9 possible 3x3 sections of the board).
 
     def __init__(self, original_config: list[list[int]]):
 
@@ -80,9 +70,7 @@ class SudokuBoard:
         """
         Translates list[list[int]] configuration to a dictionary
         :param list_config:
-        :return dict dict_config:
-            key = tuple[row, col]
-            value = dict[section:int, value:int]
+        :return dict dict_config: key = tuple[row, col], value = dict[section:int, value:int]
         """
 
         dict_config: DictConfig = OrderedDict()
@@ -107,11 +95,11 @@ class SudokuBoard:
         return self.dict_config
 
     def _get_list_config(self) -> list[list[Union[int, None]]]:
+
         """
         Convert dict_config back to list
         """
 
-        # create true list of lists
         list_config = []
 
         for _ in range(9):
@@ -188,6 +176,7 @@ class SudokuBoard:
         Update empty cell if cell is empty
         and options for that are cell == 1
         """
+
         options = list(self.get_options(row, col))
         if len(options) != 1:
             return False
@@ -210,8 +199,6 @@ class SudokuBoard:
 
 
 def main():
-    # Tester Code
-    # f = SudokuBoard(board)
     pass
 
 
