@@ -4,6 +4,8 @@ from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
 from bs4 import BeautifulSoup
 import chromedriver_autoinstaller
+import os
+import datetime
 
 chromedriver_autoinstaller.install()
 
@@ -31,7 +33,7 @@ class Browser:
 
     _starting_url: str = "https://menneske.no/sudoku/eng/random.html"
     _half_screen_width = get_screen_dimensions()['width'] // 2
-    _selenium_timeout_limit = 3
+    _selenium_timeout_limit = 10
 
     def __init__(self):
         self.difficulty = None
@@ -39,22 +41,12 @@ class Browser:
         self.driver = webdriver.Chrome()
         self.driver.set_window_position(Browser._half_screen_width, 0)
         self.driver.set_window_size(Browser._half_screen_width, Browser._half_screen_width)
+        self.saved_site_screenshot = False
 
     """
         CONVERT METHOD TO PROPERTY?
         https://www.programiz.com/python-programming/property 
     """
-
-    # def _find_base_url(self):
-    #     url_data = urllib.request.urlopen(Browser._starting_url)
-    #     html = BeautifulSoup(url_data, "html.parser")
-    #     frameset = html.find("frameset")
-    #     for frame in frameset:
-    #         try:
-    #             base_url = frame["src"]
-    #             return base_url
-    #         except TypeError:
-    #             continue
 
     def set_difficulty(self, test: bool = True):
         if not test:
@@ -77,7 +69,7 @@ class Browser:
                     else:
                         break
                 except ValueError:
-                    print("Invalid difficulty selected. Enter a number between 1 and 4.")
+                    print("Invalid difficulty selected. Enter a number between 1 and 9.")
                     continue
 
             self.difficulty = int(diff)
@@ -93,12 +85,23 @@ class Browser:
         return f"{self.base_url}?diff={self.difficulty}"
 
     def open_url(self):
-
-        self.driver.set_page_load_timeout(Browser._selenium_timeout_limit)
-        try:
-            self.driver.get(self._make_url())
-        except TimeoutException:
-            self.driver.execute_script("window.stop();")
+        tries = 0
+        while tries < 3:
+            tries += 1
+            timeout = Browser._selenium_timeout_limit * tries
+            self.driver.set_page_load_timeout(timeout)
+            try:
+                self.driver.get(self._make_url())
+                # get screenshot here
+                try:
+                    self.saved_site_screenshot = self.save_screenshot()
+                    print(self.saved_site_screenshot)
+                except OSError as ose:
+                    print(ose, "Can't Save Screenshot of Sudoku Site")
+                break
+            except TimeoutException:
+                self.driver.execute_script("window.stop();")
+                continue
 
     def _get_sudoku_html(self):
         try:
@@ -108,6 +111,27 @@ class Browser:
             return table
         except RuntimeError as re:
             print("HTML Not Returned correctly", re.args())
+
+    def save_screenshot(self) -> bool:
+        date_time_string = datetime.datetime.now().strftime("%Y/%m/%d_%H:%M:%S")
+        game_difficulty = Browser.difficulties[self.difficulty]
+        try:
+            if not os.path.exists("files/site/"):
+                print(1)
+                os.makedirs("files/site/", mode=0o777)
+                file_name = f"/files/site/{date_time_string}_sudoku_game_difficulty_{game_difficulty}.png"
+                self.driver.save_screenshot(file_name)
+                print(1.5)
+
+            else:
+                print(2)
+                file_name = f"/files/site/{date_time_string}_sudoku_game_difficulty_{game_difficulty}.png"
+                self.driver.save_screenshot(file_name)
+                print(2.5)
+            return True
+        except OSError as ose:
+            print(ose, "Can't Save Screenshot of Sudoku Site")
+            return False
 
     def make_board(self) -> SudokuConfig:
         board = []
@@ -132,7 +156,6 @@ class Browser:
 def main():
     browser = Browser()
     browser.open_url()
-
 
 
 if __name__ == "__main__":
