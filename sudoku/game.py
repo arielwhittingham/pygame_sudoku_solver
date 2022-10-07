@@ -3,8 +3,6 @@ import os
 from collections import OrderedDict
 from typing import Union  # , Set, Any, Dict
 import copy
-import time
-import pprint
 import numpy as np
 
 DictConfig = dict[tuple[int, int]:dict[str:int, str:int]]
@@ -75,7 +73,6 @@ class SudokuBoard:
 
         dict_config: DictConfig = OrderedDict()
         cell_dict: dict[str:int, str:int]
-
         x: int
         y: int
 
@@ -95,7 +92,6 @@ class SudokuBoard:
         return self.dict_config
 
     def _get_list_config(self) -> list[list[Union[int, None]]]:
-
         """
         Convert dict_config back to list
         """
@@ -125,6 +121,7 @@ class SudokuBoard:
         For example
         _return_taken_squares(row,1) will return all filled-in squares in row 1
         """
+
         taken: set[int] = set()
         config = self.config
         for key in config.keys():
@@ -148,12 +145,9 @@ class SudokuBoard:
         square: CellConfig
         square = self.config[row, col]
         starting_set = copy.copy(SudokuBoard._complete_set)
-        # check row
-        row_values = self._return_taken_squares(axis="row", val=row)
-        # check column
-        col_values = self._return_taken_squares(axis="col", val=col)
-        # check section
-        section_values = self._return_taken_squares(axis="section", val=square["section"])
+        row_values = self._return_taken_squares(axis="row", val=row)  # check row
+        col_values = self._return_taken_squares(axis="col", val=col)  # check column
+        section_values = self._return_taken_squares(axis="section", val=square["section"])  # check section
         return_set = starting_set.difference(row_values)
         return_set = return_set.difference(col_values)
         return_set = return_set.difference(section_values)
@@ -194,7 +188,6 @@ class SudokuBoard:
             col = ind[1]
             if self._value_is_null(row, col):
                 return ind
-        pprint.pprint(self.dict_config)
         return False
 
 

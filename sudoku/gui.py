@@ -131,7 +131,7 @@ class SudokuGui:
             next_blank = self.game_board.get_blank()
             if not next_blank:
                 pygame.display.update()
-                print("tries: ", SudokuGui.try_counter)
+                print("Tries: ", SudokuGui.try_counter)
                 print("Backtracking done - Solved!!")
                 time.sleep(100)
                 sys.exit()

@@ -6,18 +6,11 @@ from bs4 import BeautifulSoup
 import chromedriver_autoinstaller
 import os
 import datetime
+from utility_functions import get_screen_dimensions, make_screenshot_save_path
 
 chromedriver_autoinstaller.install()
 
 SudokuConfig = list[list[int]]
-
-
-def get_screen_dimensions():
-    import tkinter as tk
-    root = tk.Tk()
-    dimensions = {'width': root.winfo_screenwidth(), 'height': root.winfo_screenheight()}
-    root.quit()
-    return dimensions
 
 
 class Browser:
@@ -43,11 +36,6 @@ class Browser:
         self.driver.set_window_size(Browser._half_screen_width, Browser._half_screen_width)
         self.saved_site_screenshot = False
 
-    """
-        CONVERT METHOD TO PROPERTY?
-        https://www.programiz.com/python-programming/property 
-    """
-
     def set_difficulty(self, test: bool = True):
         if not test:
 
@@ -63,8 +51,8 @@ class Browser:
                   "9: Impossible")
             while True:
                 try:
-                    diff = input(" Enter number corresponding to desired difficulty: ")
-                    if diff not in ("1", "2", "3", "4"):
+                    diff = input("Enter number corresponding to desired difficulty: ")
+                    if diff not in ("1", "2", "3", "4", "5", "6", "7", "8", "9"):
                         raise ValueError
                     else:
                         break
@@ -74,7 +62,7 @@ class Browser:
 
             self.difficulty = int(diff)
         else:
-            self.difficulty = 9
+            self.difficulty = 7
 
     def get_difficulty(self) -> str:
         if self.difficulty is not None:
@@ -92,10 +80,8 @@ class Browser:
             self.driver.set_page_load_timeout(timeout)
             try:
                 self.driver.get(self._make_url())
-                # get screenshot here
                 try:
-                    self.saved_site_screenshot = self.save_screenshot()
-                    print(self.saved_site_screenshot)
+                    self.saved_site_screenshot = self.get_screenshot()
                 except OSError as ose:
                     print(ose, "Can't Save Screenshot of Sudoku Site")
                 break
@@ -110,25 +96,15 @@ class Browser:
             table = html.find("table", {"id": "main"}).find("div", {"id": "bodycol"}).find("tbody")
             return table
         except RuntimeError as re:
-            print("HTML Not Returned correctly", re.args())
+            print("HTML Not Returned correctly: ", re)
 
-    def save_screenshot(self) -> bool:
-        date_time_string = datetime.datetime.now().strftime("%Y/%m/%d_%H:%M:%S")
+    def get_screenshot(self) -> bool:
         game_difficulty = Browser.difficulties[self.difficulty]
         try:
-            if not os.path.exists("files/site/"):
-                print(1)
-                os.makedirs("files/site/", mode=0o777)
-                file_name = f"/files/site/{date_time_string}_sudoku_game_difficulty_{game_difficulty}.png"
+            file_name = make_screenshot_save_path("files/site/", game_difficulty)
+            if file_name != '':
                 self.driver.save_screenshot(file_name)
-                print(1.5)
-
-            else:
-                print(2)
-                file_name = f"/files/site/{date_time_string}_sudoku_game_difficulty_{game_difficulty}.png"
-                self.driver.save_screenshot(file_name)
-                print(2.5)
-            return True
+                return True
         except OSError as ose:
             print(ose, "Can't Save Screenshot of Sudoku Site")
             return False
@@ -142,20 +118,15 @@ class Browser:
                 try:
                     value = int(col.contents[0])
                     intermediate_list.append(value)
-                    # print(value, end=" | ")
                 except:
                     value = None
                     intermediate_list.append(value)
-                    # print(" ", end=" | ")
             board.append(intermediate_list)
-            # print("\n")
-        # print(board)
         return board
 
 
 def main():
-    browser = Browser()
-    browser.open_url()
+    pass
 
 
 if __name__ == "__main__":
