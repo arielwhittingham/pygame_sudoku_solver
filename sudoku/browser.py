@@ -36,9 +36,8 @@ class Browser:
         self.driver.set_window_size(Browser._half_screen_width, Browser._half_screen_width)
         self.saved_site_screenshot = False
 
-    def set_difficulty(self, test: bool = True):
+    def set_difficulty(self, test: bool = False):
         if not test:
-
             print("Select Difficulty.\n"
                   "1: Super easy\n"
                   "2: Very easy\n"
@@ -81,6 +80,7 @@ class Browser:
             try:
                 self.driver.get(self._make_url())
                 try:
+                    self.driver.execute_script("document.body.style.zoom='60%'")
                     self.saved_site_screenshot = self.get_screenshot()
                 except OSError as ose:
                     print(ose, "Can't Save Screenshot of Sudoku Site")
@@ -101,7 +101,7 @@ class Browser:
     def get_screenshot(self) -> bool:
         game_difficulty = Browser.difficulties[self.difficulty]
         try:
-            file_name = make_screenshot_save_path("files/site/", game_difficulty)
+            file_name = make_screenshot_save_path(save_path="files/site/", game_difficulty=game_difficulty)
             if file_name != '':
                 self.driver.save_screenshot(file_name)
                 return True

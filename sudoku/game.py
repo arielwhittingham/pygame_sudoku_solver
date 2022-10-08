@@ -1,48 +1,11 @@
-import sys
-import os
 from collections import OrderedDict
 from typing import Union  # , Set, Any, Dict
 import copy
 import numpy as np
+from utility_functions import get_section
 
 DictConfig = dict[tuple[int, int]:dict[str:int, str:int]]
 CellConfig = dict[str:int, str:int]
-
-
-def get_section(row: int, col: int) -> int:
-    """
-    :param row: row
-    :param col: column
-    :return: return 3x3 section on the board
-
-    section numbers:
-       |7|8|9|
-       |4|5|6|
-       |1|2|3|
-    """
-
-    if row <= 3:
-        if col <= 3:
-            return 1
-        elif 3 < col <= 6:
-            return 2
-        else:
-            return 3
-
-    elif 3 < row <= 6:
-        if col <= 3:
-            return 4
-        elif 3 < col <= 6:
-            return 5
-        else:
-            return 6
-    else:
-        if col <= 3:
-            return 7
-        elif 3 < col <= 6:
-            return 8
-        else:
-            return 9
 
 
 class SudokuBoard:

@@ -8,6 +8,7 @@ import game
 import browser
 from pygame import font, color
 from typing import Any, Union
+from utility_functions import make_screenshot_save_path
 
 pygame.init()
 font.init()
@@ -41,6 +42,7 @@ class SudokuGui:
         self.array_config = None
         self.dict_config = None
         self.difficulty = None
+        self.saved_board_screenshot = False
         self.main_run()
 
     def draw_grid(self):
@@ -133,7 +135,8 @@ class SudokuGui:
                 pygame.display.update()
                 print("Tries: ", SudokuGui.try_counter)
                 print("Backtracking done - Solved!!")
-                time.sleep(100)
+                self.saved_board_screenshot = self.get_screenshot()
+                time.sleep(10)
                 sys.exit()
 
             row = next_blank[0]
@@ -194,6 +197,17 @@ class SudokuGui:
     def solve_puzzle(self):
         if self.solve():
             self.backtrack()
+
+    def get_screenshot(self) -> bool:
+        # game_difficulty = Browser.difficulties[self.difficulty]
+        try:
+            file_name = make_screenshot_save_path(save_path="files/board/", game_difficulty=self.difficulty)
+            if file_name != '':
+                pygame.image.save(self.screen, file_name + ".png")
+                return True
+        except OSError as ose:
+            print(ose, "Can't Save Screenshot of Pygame Board")
+            return False
 
     def main_run(self):
         setup_once = True
