@@ -1,6 +1,8 @@
 import tkinter as tk
 import datetime
 import os
+from fpdf import FPDF
+
 
 # get screen dimensions using tkinter
 def get_screen_dimensions():
@@ -17,9 +19,9 @@ def make_screenshot_save_path(save_path, game_difficulty) -> str:
         if not os.path.exists(save_path):
             os.makedirs(save_path, mode=0o777)
             os.getcwd()
-            file_name = f"{save_path}/{date_time_string}_sudoku_game_difficulty_{game_difficulty}.png"
+            file_name = f"{os.getcwd()}/{save_path}/{date_time_string}_sudoku_game_difficulty_{game_difficulty}.png"
         else:
-            file_name = f"{save_path}/{date_time_string}_sudoku_game_difficulty_{game_difficulty}.png"
+            file_name = f"{os.getcwd()}/{save_path}/{date_time_string}_sudoku_game_difficulty_{game_difficulty}.png"
         return file_name
     except OSError as ose:
         print(ose, "Can't create file path")
@@ -62,3 +64,18 @@ def get_section(row: int, col: int) -> int:
         else:
             return 9
 
+
+# def create_pdf(unsolved_screenshot: str, solved_screenshot: str = ''):
+#     try:
+#         with open(f"{os.path.abspath(unsolved_screenshot)}") as f:
+#             print(os.getcwd())
+#             f.close()
+#             print("success")
+#     except OSError:
+#         print("Failed")
+#         print(os.getcwd())
+#
+#
+#
+# for x in os.walk(os.getcwd() + '/files'):
+#     print(x)

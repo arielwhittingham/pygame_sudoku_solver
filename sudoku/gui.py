@@ -203,7 +203,7 @@ class SudokuGui:
         try:
             file_name = make_screenshot_save_path(save_path="files/board/", game_difficulty=self.difficulty)
             if file_name != '':
-                pygame.image.save(self.screen, file_name + ".png")
+                pygame.image.save(self.screen, file_name)
                 return True
         except OSError as ose:
             print(ose, "Can't Save Screenshot of Pygame Board")
