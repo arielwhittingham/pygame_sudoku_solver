@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 import chromedriver_autoinstaller
 import os
 import datetime
-from utility_functions import get_screen_dimensions, make_screenshot_save_path
+from utility_functions import get_screen_dimensions, make_save_path
 
 chromedriver_autoinstaller.install()
 
@@ -101,7 +101,7 @@ class Browser:
     def get_screenshot(self) -> bool:
         game_difficulty = Browser.difficulties[self.difficulty]
         try:
-            file_name = make_screenshot_save_path(save_path="files/site/", game_difficulty=game_difficulty)
+            file_name = make_save_path(save_path="files/site/", game_difficulty=game_difficulty)
             if file_name != '':
                 self.driver.save_screenshot(file_name)
                 return True

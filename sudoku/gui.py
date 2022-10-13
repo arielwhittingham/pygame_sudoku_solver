@@ -8,7 +8,7 @@ import game
 import browser
 from pygame import font, color
 from typing import Any, Union
-from utility_functions import make_screenshot_save_path
+from utility_functions import make_save_path
 
 pygame.init()
 font.init()
@@ -201,7 +201,7 @@ class SudokuGui:
     def get_screenshot(self) -> bool:
         # game_difficulty = Browser.difficulties[self.difficulty]
         try:
-            file_name = make_screenshot_save_path(save_path="files/board/", game_difficulty=self.difficulty)
+            file_name = make_save_path(save_path="files/board/", game_difficulty=self.difficulty)
             if file_name != '':
                 pygame.image.save(self.screen, file_name)
                 return True

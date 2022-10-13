@@ -1,7 +1,8 @@
 import tkinter as tk
 import datetime
 import os
-from fpdf import FPDF
+from fpdf import FPDF as PDF
+import pathlib
 
 
 # get screen dimensions using tkinter
@@ -13,15 +14,15 @@ def get_screen_dimensions():
 
 
 # create path to save screenshots, for later use
-def make_screenshot_save_path(save_path, game_difficulty) -> str:
+def make_save_path(save_path, game_difficulty, extension=".png") -> str:
     date_time_string = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
     try:
         if not os.path.exists(save_path):
             os.makedirs(save_path, mode=0o777)
             os.getcwd()
-            file_name = f"{os.getcwd()}/{save_path}/{date_time_string}_sudoku_game_difficulty_{game_difficulty}.png"
+            file_name = f"{os.getcwd()}/{save_path}/{date_time_string}_sudoku_game_difficulty_{game_difficulty}.{extension}"
         else:
-            file_name = f"{os.getcwd()}/{save_path}/{date_time_string}_sudoku_game_difficulty_{game_difficulty}.png"
+            file_name = f"{os.getcwd()}/{save_path}/{date_time_string}_sudoku_game_difficulty_{game_difficulty}.{extension}"
         return file_name
     except OSError as ose:
         print(ose, "Can't create file path")
@@ -65,17 +66,32 @@ def get_section(row: int, col: int) -> int:
             return 9
 
 
-# def create_pdf(unsolved_screenshot: str, solved_screenshot: str = ''):
-#     try:
-#         with open(f"{os.path.abspath(unsolved_screenshot)}") as f:
-#             print(os.getcwd())
-#             f.close()
-#             print("success")
-#     except OSError:
-#         print("Failed")
-#         print(os.getcwd())
-#
-#
-#
-# for x in os.walk(os.getcwd() + '/files'):
-#     print(x)
+def get_newest_screenshots(sub_folder: str) -> pathlib.Path:
+    """
+    Return latest file in each screenshot directory
+    """
+    cwd = pathlib.Path(os.getcwd())
+    file_names = os.listdir(pathlib.Path.joinpath(cwd, sub_folder))
+    file_names.sort(reverse=True)
+    return pathlib.Path.joinpath(cwd, sub_folder, file_names[0])
+
+
+def create_pdf(unsolved_screenshot: str, solved_screenshot: str, game_difficulty):
+    try:
+        with open(f"{unsolved_screenshot}") as f:
+            f.close()
+        with open(f"{unsolved_screenshot}") as f:
+            f.close()
+
+    except OSError:
+        print("Failed to open screenshot files in /files directory")
+        print(os.getcwd())
+
+    try:
+        pdf_object = PDF(orientation='L')  # pdf object
+        pdf_object.add_page()
+        pdf_object.image(str(unsolved_screenshot), x=0, y=0, w=100, h=100)
+        pdf_object.image(str(solved_screenshot), x=pdf_object.w - 100, y=0, w=100, h=100)
+        pdf_object.output(make_save_path('files/pdf', game_difficulty, extension=".pdf"), 'F')
+    except OSError:
+        print("Failed to create PDF output")
