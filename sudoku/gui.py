@@ -79,8 +79,6 @@ class SudokuGui:
                 else:
                     self.screen.fill(SudokuGui.RED,
                                      rect=(row_pos, col_pos, self.window_width / 3, self.window_height / 3))
-            # self.layer_background = pygame.surface.Surface((800, 600))
-            # self.layer_background.fill(COLORS[0])
 
     def insert_value(self, row: int, col: int, value: Union[int, None], color_input: str = None, custom_color: Any = False) -> None:
 
@@ -213,12 +211,22 @@ class SudokuGui:
         setup_once = True
         solve_once = True
         running = True
+        caption_value = """ Press between 1 and 9 to select difficulty:"""
+        diffs = "1: Super easy --> 9: Impossible"""
+        val_font = pygame.font.SysFont('Arial', 14)
+        caption = val_font.render(caption_value, True, SudokuGui.GREEN)
+        diff_values = val_font.render(diffs, True, SudokuGui.GREEN)
+        self.screen.blit(caption, (0, 0))
+        self.screen.blit(diff_values, (0, 20))
         pygame.display.set_caption("Click Anywhere To Start!")
         while running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
                     sys.exit()
+
+                # if event.type == pygame.KEYDOWN:
+                #     print(event.key)
 
                 if event.type == pygame.MOUSEBUTTONUP:
                     if solve_once:
