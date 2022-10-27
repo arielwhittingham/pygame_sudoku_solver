@@ -4,8 +4,6 @@ from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
 from bs4 import BeautifulSoup
 import chromedriver_autoinstaller
-import os
-import datetime
 from utility_functions import get_screen_dimensions, make_save_path
 
 chromedriver_autoinstaller.install()

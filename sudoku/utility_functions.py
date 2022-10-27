@@ -80,12 +80,11 @@ def create_pdf(unsolved_screenshot: str, solved_screenshot: str, game_difficulty
     try:
         with open(f"{unsolved_screenshot}") as f:
             f.close()
-        with open(f"{unsolved_screenshot}") as f:
+        with open(f"{solved_screenshot}") as f:
             f.close()
 
     except OSError:
         print("Failed to open screenshot files in /files directory")
-        print(os.getcwd())
 
     try:
         pdf_object = PDF(orientation='L')  # pdf object
