@@ -105,9 +105,9 @@ class SudokuGui:
         screen_position = self.index_to_screen_position(row, col)
         self.screen.blit(val, screen_position)
 
-    def fetch_game(self):
+    def fetch_game(self, difficulty: int):
         sudoku_site = browser.Browser()
-        self.game_board = game.SudokuBoard(sudoku_site.make_board())
+        self.game_board = game.SudokuBoard(sudoku_site.make_board(difficulty))
         self.difficulty = sudoku_site.get_difficulty()
         self.refresh_board()
 
@@ -126,7 +126,6 @@ class SudokuGui:
 
     def backtrack(self):
         try:
-            # pygame.display.update()
             self.refresh_board()
             next_blank = self.game_board.get_blank()
             if not next_blank:
@@ -156,7 +155,6 @@ class SudokuGui:
                 self.insert_value(row, col, option, custom_color=color.Color(original_color))
                 self.game_board.remove_value(row, col)
                 self.refresh_board()
-                # pygame.display.update()
         except RuntimeError as re:
             print("Backtrack Runtime Error", re)
 
@@ -186,10 +184,12 @@ class SudokuGui:
         except RuntimeError as re:
             print("Solver Runtime Error", re)
 
-    def setup_puzzle(self):
+    def setup_board(self):
         self.color_sections()
         self.draw_grid()
-        self.fetch_game()
+
+    def setup_game(self, difficulty: int):
+        self.fetch_game(difficulty)
         self.set_gui_data()
 
     def solve_puzzle(self):
@@ -218,22 +218,32 @@ class SudokuGui:
         diff_values = val_font.render(diffs, True, SudokuGui.GREEN)
         self.screen.blit(caption, (0, 0))
         self.screen.blit(diff_values, (0, 20))
-        pygame.display.set_caption("Click Anywhere To Start!")
+        pygame.display.set_caption("Sudoku Solver - Select Difficulty")
         while running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
                     sys.exit()
 
-                # if event.type == pygame.KEYDOWN:
-                #     print(event.key)
+                if event.type == pygame.KEYDOWN:
+                    difficulty_input = chr(event.key)
+                    try:
+                        difficulty_input = int(difficulty_input)
+                        print("input:", type(difficulty_input))
+                        if not (1 <= difficulty_input <= 9):
+                            raise ValueError
+                        else:
+                            pass
+                    except ValueError as ve:
+                        print(ve.args, "\n", "Invalid Input. Enter a Number Between 1 and 9 to select game difficulty")
+                        continue
 
-                if event.type == pygame.MOUSEBUTTONUP:
                     if solve_once:
                         solve_once = False
                         if setup_once:
                             setup_once = False
-                            self.setup_puzzle()
+                            self.setup_board()
+                            self.setup_game(difficulty_input)
                             pygame.display.set_caption(f"Sudoku Solver - Difficulty: {self.difficulty}")
                             pygame.event.pump()
                         try:
@@ -241,10 +251,8 @@ class SudokuGui:
                             sys.exit()
                         except RuntimeError:
                             break
-                if event.type == pygame.MOUSEBUTTONDOWN or pygame.MOUSEBUTTONUP:
-                    pass
 
-            pygame.display.update()
+                pygame.display.update()
 
 
 def main():

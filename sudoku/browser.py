@@ -34,29 +34,8 @@ class Browser:
         self.driver.set_window_size(Browser._half_screen_width, Browser._half_screen_width)
         self.saved_site_screenshot = False
 
-    def set_difficulty(self, test: bool = False):
+    def set_difficulty(self, diff, test: bool = False):
         if not test:
-            print("Select Difficulty.\n"
-                  "1: Super easy\n"
-                  "2: Very easy\n"
-                  "3: Easy\n"
-                  "4: Medium\n"
-                  "5: Hard\n"
-                  "6: Harder\n"
-                  "7: Very hard\n"
-                  "8: Super hard\n"
-                  "9: Impossible")
-            while True:
-                try:
-                    diff = input("Enter number corresponding to desired difficulty: ")
-                    if diff not in ("1", "2", "3", "4", "5", "6", "7", "8", "9"):
-                        raise ValueError
-                    else:
-                        break
-                except ValueError:
-                    print("Invalid difficulty selected. Enter a number between 1 and 9.")
-                    continue
-
             self.difficulty = int(diff)
         else:
             self.difficulty = 7
@@ -66,7 +45,7 @@ class Browser:
             return Browser.difficulties[self.difficulty]
 
     def _make_url(self) -> str:
-        self.set_difficulty()
+        # self.set_difficulty(diff)
         return f"{self.base_url}?diff={self.difficulty}"
 
     def open_url(self):
@@ -96,18 +75,8 @@ class Browser:
         except RuntimeError as re:
             print("HTML Not Returned correctly: ", re)
 
-    def get_screenshot(self) -> bool:
-        game_difficulty = Browser.difficulties[self.difficulty]
-        try:
-            file_name = make_save_path(save_path="files/site/", game_difficulty=game_difficulty)
-            if file_name != '':
-                self.driver.save_screenshot(file_name)
-                return True
-        except OSError as ose:
-            print(ose, "Can't Save Screenshot of Sudoku Site")
-            return False
-
-    def make_board(self) -> SudokuConfig:
+    def make_board(self, difficulty: int) -> SudokuConfig:
+        self.set_difficulty(difficulty)
         board = []
         html = self._get_sudoku_html()
         for i, row in enumerate(html.find_all("tr")):
@@ -121,6 +90,17 @@ class Browser:
                     intermediate_list.append(value)
             board.append(intermediate_list)
         return board
+
+    def get_screenshot(self) -> bool:
+        game_difficulty = Browser.difficulties[self.difficulty]
+        try:
+            file_name = make_save_path(save_path="files/site/", game_difficulty=game_difficulty)
+            if file_name != '':
+                self.driver.save_screenshot(file_name)
+                return True
+        except OSError as ose:
+            print(ose, "Can't Save Screenshot of Sudoku Site")
+            return False
 
 
 def main():
