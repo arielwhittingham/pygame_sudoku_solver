@@ -5,7 +5,6 @@ bs4==0.0.1
 certifi==2022.6.15
 cffi==1.15.1
 charset-normalizer==2.1.0
-chromedriver-autoinstaller==0.4.0
 coverage==6.4.4
 cryptography==37.0.4
 Cython==0.29.32
@@ -25,12 +24,13 @@ PySocks==1.7.1
 python-dotenv==0.20.0
 requests==2.28.1
 screeninfo==0.8
-selenium==4.3.0
+selenium
 sniffio==1.2.0
 sortedcontainers==2.4.0
 soupsieve==2.3.2.post1
 trio==0.21.0
 trio-websocket==0.9.2
 urllib3==1.26.11
-webdriver-manager==3.8.0
+webdriver-manager
+chromedriver_autoinstaller
 wsproto==1.1.0

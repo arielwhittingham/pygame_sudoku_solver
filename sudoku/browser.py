@@ -3,11 +3,13 @@ import urllib.parse
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
 from bs4 import BeautifulSoup
-import chromedriver_autoinstaller
+# import chromedriver_autoinstaller
+from selenium.webdriver.chrome.service import Service as ChromeService
+from webdriver_manager.chrome import ChromeDriverManager
 from utility_functions import get_screen_dimensions, make_save_path
 
-chromedriver_autoinstaller.install()
-
+_web_driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+_web_driver.set_window_size(10, 10)
 SudokuConfig = list[list[int]]
 
 
@@ -29,7 +31,7 @@ class Browser:
     def __init__(self):
         self.difficulty = None
         self.base_url = Browser._starting_url
-        self.driver = webdriver.Chrome()
+        self.driver = _web_driver
         self.driver.set_window_position(Browser._half_screen_width, 0)
         self.driver.set_window_size(Browser._half_screen_width, Browser._half_screen_width)
         self.saved_site_screenshot = False
